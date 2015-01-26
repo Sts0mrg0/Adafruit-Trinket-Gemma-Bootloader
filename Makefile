@@ -32,10 +32,10 @@ DEVICE = attiny85
 # BOOTLOADER_ADDRESS must be a multiple of SPM_PAGESIZE, which is 64 for the ATtiny85
 # see table on the bottom of this makefile
 # Note: the compiler used was AVR-GCC 4.7.2 , other versions may change the bootloader size
-BOOTLOADER_ADDRESS_HV = 1500
+BOOTLOADER_ADDRESS_HV = 14C0
 BOOTLOADER_ADDRESS_LV = 14C0
 
-PROGRAMMER = -c usbtiny -B 1
+PROGRAMMER = -c usbasp
 # PROGRAMMER contains AVRDUDE options to address your programmer
 
 FUSEOPT_t85        = -U efuse:w:0xFE:m -U hfuse:w:0xD5:m
@@ -108,7 +108,7 @@ fuse_pll:
 	$(AVRDUDE) $(FUSEOPT_t85_PLL)
 
 clean:
-	rm -f *.hex *.bin *.elf *.o *.lst *.lss usbdrv/*.o boot_hv.s boot_lv.s jump_lv.s jump_hv.s usbdrv/oddebug.s usbdrv/usbdrv.s
+	rm -f boot_hv.hex boot_lv.hex jump_hv.hex jump_lv.hex *.bin *.elf *.o *.lst *.lss usbdrv/*.o boot_hv.s boot_lv.s jump_lv.s jump_hv.s usbdrv/oddebug.s usbdrv/usbdrv.s
 
 # file targets:
 
@@ -161,6 +161,7 @@ jump_hv.hex:	jump_hv.elf
 # program size lookup table
 # decimal then hex, in bytes (not words)
 # bootloader compile size on the left, corresponding bootloader address on the right
+# round up
 # 1984	0x07C0					6208	0x1840
 # 2048	0x0800					6144	0x1800
 # 2112	0x0840					6080	0x17C0

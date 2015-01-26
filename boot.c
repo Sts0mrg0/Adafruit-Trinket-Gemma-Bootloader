@@ -479,6 +479,21 @@ void power_up (void)
 // ----------------------------------------------------------------------
 __attribute__((naked))	__attribute__((noreturn))	extern	int	main ( void )
 {
+
+	if( MCUSR &= (1 << PORF) )//|| (*(uint8_t*)(RAMEND)==0xAA) )
+	{
+		//skip bootloader reset source is something other than a the reset-button
+		//todo: also skip bootloaded when reset is presses while still inside the bootloader (first 10 seconds)
+
+		// clear Power-on Reset Flag
+		MCUSR &= ~(1 << PORF);
+		// clear magic word from bottom of stack before jumping to the app
+		*(uint8_t*)(RAMEND)		= 0x00;
+		// this will jump to user app
+		asm volatile("rjmp (__vectors - 2)");
+	}
+
+
 	#ifdef ENABLE_RESTORE_OSCCAL
 	uint8_t old_osccal = OSCCAL; // remember this so we can restore it later
 	// this must saved before interrupts are enabled, because of when calibrateOscillator is called
